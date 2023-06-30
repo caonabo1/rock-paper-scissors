@@ -5,7 +5,6 @@ function getComputerChoice() {
 }
 
 function playRound(playerSelection, computerSelection) {
-    playerSelection = playerSelection.toLowerCase().charAt(0).toUpperCase() + playerSelection.toLowerCase().slice(1);
     if (playerSelection === computerSelection) return 'A Draw!';
 
     let result;
@@ -24,39 +23,43 @@ function playRound(playerSelection, computerSelection) {
     return result;
 }
 
-function validatePlayerSelection(selection) {
-    if (selection === null) return false;
-    selection = selection.toLowerCase();
-    if (selection === 'rock' || selection === 'paper' || selection === 'scissors') return true;
-    return false;
-}
 
-function game() {
-    let roundsPlayed = 0;
-    let userScore = 0;
-    let computerScore = 0;
+function game(event) {
+    const computerSelection = getComputerChoice();
+    const playerSelection = event.target.textContent;
+    const roundResult = playRound(playerSelection, computerSelection);
 
-    while (roundsPlayed != 5) {
-        const playerSelection = prompt('Choose rock, paper or scissors:');
-        if (!validatePlayerSelection(playerSelection)) {
-            alert('Invalid input');
-            continue;
-        }
-
-        const computerSelection = getComputerChoice();
-        const roundResult = playRound(playerSelection, computerSelection);
-
-        if (roundResult.includes('Lose')) {
-            computerScore++;
-        } else if (roundResult.includes('Win')) {
+    if (roundResult.includes('Lose')) {
+        computerScore++;
+    } else if (roundResult.includes('Win')) {
             userScore++;
-        }
-
-        roundsPlayed++;
-        console.log(`Round ${roundsPlayed} | ${roundResult} Player ${userScore}-${computerScore} Computer`);
     }
 
-    console.log(`Final: Player ${userScore}-${computerScore} Computer`);
+    resultsOutput.textContent = `${roundResult} Player ${userScore}-${computerScore} Computer`;
+    if (userScore == 5 || computerScore == 5) {
+        const final = `Final: Player ${userScore}-${computerScore} Computer`;
+        resultsOutput.innerHTML = resultsOutput.textContent + '<br>' + final;
+        userScore = 0;
+        computerScore = 0;
+    }
 }
 
-game();
+const buttons = [];
+for (let i = 0; i < 3; i++) {
+    const button = document.createElement('button');
+    buttons.push(button);
+}
+
+buttons[0].textContent = 'Rock';
+buttons[1].textContent = 'Paper';
+buttons[2].textContent = 'Scissors';
+
+buttons.forEach((button) => {
+    document.body.insertBefore(button, document.body.lastElementChild);
+});
+
+document.body.addEventListener('click', game);
+let userScore = 0;
+let computerScore = 0;
+const resultsOutput = document.createElement('div');
+document.body.insertBefore(resultsOutput, document.body.lastElementChild);
